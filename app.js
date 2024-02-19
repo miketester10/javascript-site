@@ -168,18 +168,37 @@ function costruisci_tabella(esami) {
 
 function sort_by_date() {
     let data_sort = document.querySelector('#dataSort');
+    let flag = true;
     data_sort.addEventListener('click', (event) => {
         event.preventDefault(); 
-        let tabella_aggiornata = [...aggiorna_tabella()].slice(0, -1);
-        let esami = []
-        tabella_aggiornata.forEach((riga) => {
-            let data = (riga.children[0].textContent).split('/');
-            data = `${data[2]}-${data[1]}-${data[0]}`;  
-            esami.push(new Esame(data, riga.children[1].textContent, riga.children[2].textContent, riga.children[3].textContent));
-        });
-        esami.sort((a, b) => a.data - b.data);
-        costruisci_tabella(esami);
-        console.log(esami);   
+        
+        if (flag) {
+            // al primo click ordina per data in ordine crescente
+            let tabella_aggiornata = [...aggiorna_tabella()].slice(0, -1);
+            let esami = []
+            tabella_aggiornata.forEach((riga) => {
+                let data = (riga.children[0].textContent).split('/');
+                data = `${data[2]}-${data[1]}-${data[0]}`;  
+                esami.push(new Esame(data, riga.children[1].textContent, riga.children[2].textContent, riga.children[3].textContent));
+            });
+            esami.sort((a, b) => a.data - b.data);
+            costruisci_tabella(esami);
+            flag = false;
+            
+        } else {
+            // al secondo click ordina per data in ordine decrescente, poi riparte con il primo click, ovvero in ordine crescente e così via
+            let tabella_aggiornata = [...aggiorna_tabella()].slice(0, -1);
+            let esami = []
+            tabella_aggiornata.forEach((riga) => {
+                let data = (riga.children[0].textContent).split('/');
+                data = `${data[2]}-${data[1]}-${data[0]}`;  
+                esami.push(new Esame(data, riga.children[1].textContent, riga.children[2].textContent, riga.children[3].textContent));
+            });
+            esami.sort((a, b) => b.data - a.data);
+            costruisci_tabella(esami);
+            flag = true;
+        }
+            
     });
 };
 
