@@ -1,0 +1,22 @@
+.footer {
+
+    background-color: #bbd8f6;
+    position: absolute;
+    bottom: 0;
+}
+
+.alert-no-visible {
+    display: none;
+
+}
+
+.alert {
+    text-align: center;
+    margin-left: 25%;
+    margin-right: 25%;
+}
+
+#dataSort, #homepage {
+    text-decoration: none; /* Rimuove la sottolineatura */
+    color: inherit; /* Usa il colore del testo ereditato */
+}
