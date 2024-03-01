@@ -4,6 +4,9 @@ let trs;
 let buttons;
 let timeoutID; // lo metto fuori dalla funzione gestione_bottone() così che ha una scope globale ed è accessibile da tutti
 let alert1 = document.querySelector('.alert')
+let variabile_localStorage = JSON.parse(localStorage.getItem('esami'));
+let array_esami = variabile_localStorage ? variabile_localStorage : [];
+
 
 class Esame {
     constructor(data, esame, crediti, voto) {
@@ -27,7 +30,7 @@ function aggiungi_riga_esame() {
     let esameInput = document.querySelector('#esameInput');
     let creditiInput = document.querySelector('#creditiInput');
     let votoInput = document.querySelector('#votoInput');
-    console.log(dataInput.value);
+    // console.log(dataInput.value);
     let esame = new Esame(dataInput.value, esameInput.value, creditiInput.value, votoInput.value);
     let nuovo_tr = document.createElement('tr');
     for (let key in esame) {
@@ -51,11 +54,14 @@ function aggiungi_riga_esame() {
     
     trs[trs.length - 1].before(nuovo_tr);
 
+    array_esami.push(esame);
+    localStorage.setItem('esami', JSON.stringify(array_esami));
+
     dataInput.value = '';
     esameInput.value = '';
     creditiInput.value = '';
     votoInput.value = '';
-       
+    
 };
 
 function gestione_bottone(...args) {
@@ -83,6 +89,8 @@ function gestione_bottone(...args) {
 
         if (timeoutID) {
             args.length === 2 ? trs[indice_button].remove() : nuovo_tr.remove();
+            array_esami.splice(indice_button, 1);
+            localStorage.setItem('esami', JSON.stringify(array_esami));
             clearTimeout(timeoutID);
             alert1.classList.remove('alert-success');
             alert1.classList.add('alert-no-visible', 'alert-danger');
@@ -97,6 +105,8 @@ function gestione_bottone(...args) {
 
         } else {
             args.length === 2 ? trs[indice_button].remove() : nuovo_tr.remove();
+            array_esami.splice(indice_button, 1);
+            localStorage.setItem('esami', JSON.stringify(array_esami));
             clearTimeout(timeoutID);  
             alert1.classList.remove('alert-no-visible', 'alert-success');
             alert1.classList.add('alert-danger');
@@ -137,7 +147,8 @@ function costruisci_tabella(esami) {
         let td_crediti = document.createElement('td');
         let td_voto = document.createElement('td');
 
-        td_data.textContent = esame.data.format('DD/MM/YYYY');          
+        esame.data = dayjs(esame.data); // converto la data in un oggetto dayjs quando lo recupero dal localStorage
+        td_data.textContent = esame.data.format('DD/MM/YYYY');        
         td_esame.textContent = esame.esame;
         td_crediti.textContent = esame.crediti;
         td_voto.textContent = esame.voto;
@@ -182,6 +193,8 @@ function sort_by_date() {
                 esami.push(new Esame(data, riga.children[1].textContent, riga.children[2].textContent, riga.children[3].textContent));
             });
             esami.sort((a, b) => a.data - b.data);
+            array_esami = esami;
+            localStorage.setItem('esami', JSON.stringify(esami));
             costruisci_tabella(esami);
             flag = false;
             
@@ -195,6 +208,8 @@ function sort_by_date() {
                 esami.push(new Esame(data, riga.children[1].textContent, riga.children[2].textContent, riga.children[3].textContent));
             });
             esami.sort((a, b) => b.data - a.data);
+            array_esami = esami;
+            localStorage.setItem('esami', JSON.stringify(array_esami));
             costruisci_tabella(esami);
             flag = true;
         }
@@ -203,3 +218,7 @@ function sort_by_date() {
 };
 
 sort_by_date();
+
+if (array_esami.length > 0) {
+    costruisci_tabella(array_esami);
+}
